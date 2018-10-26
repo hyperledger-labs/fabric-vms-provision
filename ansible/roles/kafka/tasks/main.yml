@@ -1,0 +1,59 @@
+---
+- name: "install java"                          
+  remote_user: root
+  apt:
+    name: openjdk-8-jre
+    state: present
+
+- name: "remove host localhost mapping"                                                               
+  remote_user: root                                                                                   
+  lineinfile:
+    path: /etc/hosts                                                                                  
+    state: absent
+    regexp: '^127.0.1.1'
+
+- name: "ufw allow kafka"
+  remote_user: root
+  ufw:
+    interface: eth0
+    direction: in
+    rule: allow
+    proto: tcp
+    port: 9092:9093
+
+- name: "download kafka"
+  remote_user: "{{ fabric.user }}"
+  get_url:
+    url: "http://apache.belnet.be/kafka/1.1.0/kafka_2.11-1.1.0.tgz"
+    dest: "/home/{{ fabric.user }}/kafka.tgz"
+
+- name: "create ~/k"
+  remote_user: "{{ fabric.user }}"
+  file:
+    path: "/home/{{ fabric.user }}/k"
+    owner: "{{ fabric.user }}"
+    group: "{{ fabric.user }}"
+    state: directory
+
+- name: "extract kafka"
+  remote_user: "{{ fabric.user }}"
+  unarchive:
+     remote_src: yes
+     src: "/home/{{ fabric.user }}/kafka.tgz"
+     dest: "/home/{{ fabric.user }}/k"
+
+- name: "add kafka conf"
+  remote_user: "{{ fabric.user }}"
+  template:
+    src: "../files/server.properties"
+    dest: "/home/{{ fabric.user }}/k/kafka_2.11-1.1.0/config/server.properties"
+    mode: 0644
+    owner: "{{ fabric.user }}"
+    group: "{{ fabric.user }}"
+
+- name: "add kafka systemd service file"
+  remote_user: root
+  template:
+    src: "../files/kafka.service"
+    dest: "/etc/systemd/system/kafka.service"
+    mode: 0644

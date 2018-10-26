@@ -1,0 +1,72 @@
+---
+- name: check if python is installed
+  remote_user: root
+  raw: test -e /usr/bin/python
+  register: python_installed
+  changed_when: false
+  failed_when: false
+
+- name: check if debian based OS
+  remote_user: root
+  raw: which apt-get
+  register: is_ubuntu
+  changed_when: false
+  failed_when: false
+
+- name: install python
+  remote_user: root
+  raw: (apt-get -y update && apt-get install -y python-minimal)
+  when: python_installed.rc != 0 and is_ubuntu.rc == 0
+
+- name: update and upgrade apt packages
+  remote_user: root
+  apt:
+    update_cache: yes
+#    upgrade: yes
+ 
+- name: install build-essential, libltdl-dev
+  remote_user: root
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - 'build-essential'
+    - 'libltdl-dev'
+    - 'tree'
+    - 'htop'
+
+- name: "update /etc/hosts"
+  remote_user: root
+  blockinfile:
+    insertbefore: BOF
+    path: "/etc/hosts"
+    block: |
+      {{ lookup('file', '../files/hosts') }}
+
+- name: "add user fabric"
+  remote_user: root
+  user:
+    user: "{{ fabric.user }}"  
+    uid: "{{ fabric.uid }}"
+    password: "{{ fabric.pass }}"
+    groups: sudo
+    state: present
+    shell: /bin/bash
+
+- name: "add ssh key for fabric"
+  remote_user: root
+  authorized_key:
+    user: "{{ fabric.user }}"
+    state: present
+    key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/fabric.pub') }}"
+
+- name: "ufw allow ssh"
+  remote_user: root
+  ufw:
+    rule: allow
+    port: ssh
+
+- name: "ufw enable"
+  remote_user: root
+  ufw:
+    state: enabled

@@ -1,0 +1,69 @@
+---
+- name: "install docker-compose"
+  remote_user: root
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - 'docker-compose'
+
+- name: "mkdir build directory"
+  remote_user: "{{ fabric.user }}"
+  file:
+    path: "/home/{{ fabric.user }}/build"
+    owner: "{{ fabric.user }}"
+    group: "{{ fabric.user }}"
+    state: directory
+
+- name: "mkdir ~/golang/src/localhost"
+  remote_user: "{{ fabric.user }}"
+  file:
+    path: "/home/{{ fabric.user }}/golang/src/localhost"
+    owner: "{{ fabric.user }}"
+    group: "{{ fabric.user }}"
+    state: directory
+
+- name: "mkdir ~/golang/src/localhost/fabric-sdk-go"
+  remote_user: "{{ fabric.user }}"
+  file:
+    path: "/home/{{ fabric.user }}/golang/src/localhost/fabric-sdk-go"
+    owner: "{{ fabric.user }}"
+    group: "{{ fabric.user }}"
+    state: directory
+
+- name: "copy fabric build script"
+  remote_user: "{{ fabric.user }}"
+  template:
+    src: "../files/build.sh"
+    dest: "/home/{{ fabric.user }}/build"
+    owner: "{{ fabric.user }}"
+    group: "{{ fabric.user }}"
+    mode: 0755
+
+- name: "copy fabric network artifact creation script"
+  remote_user: "{{ fabric.user }}"
+  copy:
+    src: ../files/generate
+    dest: "/home/{{ fabric.user }}/build"
+
+- name: "copy fabric-sdk-go/caRegisterAndEnrol src"
+  remote_user: "{{ fabric.user }}"
+  copy:
+    src: ../files/fabric-sdk-go/caRegisterAndEnrol
+    dest: "/home/{{ fabric.user }}/golang/src/localhost/fabric-sdk-go"
+
+- name: "copy fabric-sdk-go/invoke src"
+  remote_user: "{{ fabric.user }}"
+  copy:
+    src: ../files/fabric-sdk-go/invoke
+    dest: "/home/{{ fabric.user }}/golang/src/localhost/fabric-sdk-go"
+
+- name: "copy fabric-sdk-go/query src"
+  remote_user: "{{ fabric.user }}"
+  copy:
+    src: ../files/fabric-sdk-go/query
+    dest: "/home/{{ fabric.user }}/golang/src/localhost/fabric-sdk-go"
+
+- name: "fetch and build fabric peer, orderer, cryptogen, configtxgen"
+  remote_user: "{{ fabric.user }}"
+  command: "/home/{{ fabric.user }}/build/build.sh"

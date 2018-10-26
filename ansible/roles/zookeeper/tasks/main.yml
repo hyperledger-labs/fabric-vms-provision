@@ -1,0 +1,76 @@
+---
+- name: "install java"
+  remote_user: root
+  apt:
+    name: default-jdk
+    state: present
+ 
+- name: "remove host localhost mapping"
+  remote_user: root
+  lineinfile:
+    path: /etc/hosts
+    state: absent
+    regexp: '^127.0.1.1'
+
+- name: "ufw allow zookeeper"
+  remote_user: root
+  ufw:
+    interface: eth0
+    direction: in
+    rule: allow
+    proto: tcp
+    port: 2181:2183
+
+- name: "download zookeeper"
+  remote_user: "{{ fabric.user }}"
+  get_url:
+    url: "http://apache.belnet.be/zookeeper/current/zookeeper-3.4.12.tar.gz"
+    dest: "/home/{{ fabric.user }}/zookeeper.tar.gz"
+
+- name: "create ~/z"
+  remote_user: "{{ fabric.user }}"
+  file:
+    path: "/home/{{ fabric.user }}/z"
+    owner: "{{ fabric.user }}"
+    group: "{{ fabric.user }}"
+    state: directory
+
+- name: "extract zookeeper"
+  remote_user: "{{ fabric.user }}"
+  unarchive:
+     remote_src: yes
+     src: "/home/{{ fabric.user }}/zookeeper.tar.gz"
+     dest: "/home/{{ fabric.user }}/z"
+
+- name: "create ~/z/zookeeper-3.4.12/data"
+  remote_user: "{{ fabric.user }}"
+  file:
+    path: "/home/{{ fabric.user }}/z/zookeeper-3.4.12/data"
+    owner: "{{ fabric.user }}"
+    group: "{{ fabric.user }}"
+    state: directory
+
+- name: "add zookeeper conf"
+  remote_user: "{{ fabric.user }}"
+  template:
+    src: "../files/zoo.cfg"
+    dest: "/home/{{ fabric.user }}/z/zookeeper-3.4.12/conf/zoo.cfg"
+    mode: 0644
+    owner: "{{ fabric.user }}"
+    group: "{{ fabric.user }}"
+
+- name: "add zookeeper id"
+  remote_user: "{{ fabric.user }}"
+  template:
+    src: "../files/myid"
+    dest: "/home/{{ fabric.user }}/z/zookeeper-3.4.12/data/myid"
+    mode: 0644
+    owner: "{{ fabric.user }}"
+    group: "{{ fabric.user }}"
+
+- name: "add zookeeper systemd service file"
+  remote_user: root
+  template:
+    src: "../files/zookeeper.service"
+    dest: "/etc/systemd/system/zookeeper.service"
+    mode: 0644

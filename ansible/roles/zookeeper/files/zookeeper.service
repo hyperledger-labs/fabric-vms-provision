@@ -1,0 +1,16 @@
+[Unit]
+Description=zookeeper
+Requires=network.target
+After=network.target
+
+[Service]
+Type=forking
+User={{ fabric.user }}
+Group={{ fabric.user }}
+ExecStart=/home/{{ fabric.user }}/z/zookeeper-3.4.12/bin/zkServer.sh   start    /home/{{ fabric.user }}/z/zookeeper-3.4.12/conf/zoo.cfg
+ExecStop=/home/{{ fabric.user }}/z/zookeeper-3.4.12/bin/zkServer.sh    stop     /home/{{ fabric.user }}/z/zookeeper-3.4.12/conf/zoo.cfg
+ExecReload=/home/{{ fabric.user }}/z/zookeeper-3.4.12/bin/zkServer.sh  restart  /home/{{ fabric.user }}/z/zookeeper-3.4.12/conf/zoo.cfg
+WorkingDirectory=/home/{{ fabric.user }}/z/zookeeper-3.4.12
+
+[Install]
+WantedBy=default.target
