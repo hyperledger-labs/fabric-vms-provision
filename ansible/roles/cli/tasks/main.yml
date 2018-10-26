@@ -1,0 +1,28 @@
+- name: "mkdir ~/golang/src/localhost/chaincodes/go/kv"
+  remote_user: "{{ fabric.user }}"
+  file:
+    path: "/home/{{ fabric.user }}/golang/src/localhost/chaincodes/go/kv"
+    owner: "{{ fabric.user }}"
+    group: "{{ fabric.user }}"
+    state: directory
+
+- name: "copy chaincode"
+  remote_user: "{{ fabric.user }}"
+  copy:
+    src: "../files/kv.go"
+    dest: "/home/{{ fabric.user }}/golang/src/localhost/chaincodes/go/kv"
+    owner: "{{ fabric.user }}"
+    group: "{{ fabric.user }}"
+    mode: 0755
+
+- name: "copy cli artifacts"
+  synchronize:
+    src: "/home/{{ fabric.user }}/build/fabric/org{{ org_id }}/pkg-cli{{ org_id }}"
+    dest: "/home/{{ fabric.user }}"
+  delegate_to: "{{ groups['build'][0] }}"
+
+- name: "copy cli invoke"
+  synchronize:
+    src: "/home/{{ fabric.user }}/build/fabric/pkg-invoke"
+    dest: "/home/{{ fabric.user }}"
+  delegate_to: "{{ groups['build'][0] }}"

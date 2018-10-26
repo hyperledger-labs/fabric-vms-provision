@@ -1,0 +1,14 @@
+[Unit]
+Description=kafka
+Requires=network.target
+After=network.target
+
+[Service]
+Type=simple
+User={{ fabric.user }}
+Group={{ fabric.user }}
+ExecStart=/home/{{ fabric.user }}/k/kafka_2.11-1.1.0/bin/kafka-server-start.sh /home/{{ fabric.user }}/k/kafka_2.11-1.1.0/config/server.properties
+ExecStop=/home/{{ fabric.user }}/k/kafka_2.11-1.1.0/bin/kafka-server-stop.sh
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,29 @@
+---
+- name: "install docker-ce prerequisites"
+  remote_user: root
+  apt: name= {{ item }} update_cache=yes
+  with_items:
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - software-properties-common
+
+- name: "add docker GPG key"
+  remote_user: root
+  apt_key: url=https://download.docker.com/linux/ubuntu/gpg
+
+- name: "add docker repository"
+  remote_user: root
+  apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
+
+- name: "install docker-ce"
+  remote_user: root
+  apt:
+    name: docker-ce
+
+- name: "add user fabric to docker group"
+  remote_user: root
+  user:
+    user: "{{ fabric.user }}"  
+    groups: docker

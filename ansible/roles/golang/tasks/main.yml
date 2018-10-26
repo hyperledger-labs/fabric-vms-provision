@@ -1,0 +1,39 @@
+---
+- name: "download golang"
+  remote_user: "{{ fabric.user }}"
+  get_url:
+    url: "{{ golang_url }}"
+    dest: "/home/{{ fabric.user }}/golang.tar.gz"
+
+- name: "create ~/local"
+  remote_user: "{{ fabric.user }}"
+  file:
+    path: "/home/{{ fabric.user }}/local"
+    owner: "{{ fabric.user }}"
+    group: "{{ fabric.user }}"
+    state: directory
+
+- name: "extract golang"
+  remote_user: "{{ fabric.user }}"
+  unarchive:
+    remote_src: yes
+    src: "/home/{{ fabric.user }}/golang.tar.gz"
+    dest: "/home/{{ fabric.user }}/local/"
+
+- name: "add gopath directory"
+  remote_user: "{{ fabric.user }}"
+  file:
+    path: "/home/{{ fabric.user }}/golang"
+    owner: "{{ fabric.user }}"
+    group: "{{ fabric.user }}"
+    state: directory
+
+- name: "update bashrc"
+  remote_user: "{{ fabric.user }}"
+  blockinfile:
+    insertafter: EOF
+    path: "/home/{{ fabric.user }}/.bashrc"
+    block: |
+      export GOROOT=${HOME}/local/go
+      export GOPATH=${HOME}/golang
+      export PATH=${GOROOT}/bin:${GOPATH}/bin:${HOME}/local/bin:${PATH}

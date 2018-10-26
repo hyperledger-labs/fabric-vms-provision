@@ -1,0 +1,18 @@
+golang_url: "https://dl.google.com/go/go1.10.3.linux-amd64.tar.gz"
+
+sl_hostname: "fabric"
+sl_domain: "example.com"
+sl_datacenter: "dal05"
+sl_cpus: 2
+sl_cpus_peer: 4
+sl_ram: 2048
+sl_ram_peer: 4096
+sl_os: "UBUNTU_16_64"
+sl_tag: "fabric"
+sl_sshkey: "{{ lookup('env','SLKEYID') }}"
+ 
+fabric: {
+  user: "fabric",
+  uid: "1001",
+  pass: "{{ lookup('env','SLPASS') }}"
+}

@@ -1,0 +1,21 @@
+- name: "ufw allow fabric"
+  remote_user: root
+  ufw:
+    interface: eth0
+    direction: in
+    rule: allow
+    proto: tcp
+    port: 7050:7054
+
+- name: copy fabric-ca artifacts
+  synchronize:
+    src: "/home/{{ fabric.user }}/build/fabric/org{{ org_id }}/pkg-fabric-ca{{ org_id }}"
+    dest: "/home/{{ fabric.user }}"
+  delegate_to: "{{ groups['build'][0] }}"
+
+- name: "add fabricca systemd service file"
+  remote_user: root
+  template:
+    src: "../files/fabricca.service"
+    dest: "/etc/systemd/system/fabricca.service"
+    mode: 0644

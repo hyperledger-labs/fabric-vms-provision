@@ -1,0 +1,4 @@
+- name: cancel instances
+  sl_vm:
+    state: absent
+    tags: "{{ sl_tag }}"
