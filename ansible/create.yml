@@ -2,6 +2,6 @@
 - hosts: localhost
   gather_facts: no
   vars_files:
-  - "{{ lookup('env','VARS_FILE') }}"
+    - "{{ lookup('env','VARS_FILE') }}"
   roles:
   - create

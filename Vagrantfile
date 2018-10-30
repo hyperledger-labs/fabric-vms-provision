@@ -21,6 +21,8 @@ git clone https://github.com/fatih/vim-go.git ~/.vim/bundle/vim-go
 
 
 pip3 install --user ansible
+pip3 install --user boto
+pip3 install --user boto3
 pip3 install --user docker-compose
 pip3 install --user softlayer
 
