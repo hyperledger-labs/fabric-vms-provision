@@ -62,7 +62,7 @@ cat << 'EOF' > cancel.yml
   vars_files:
   - "{{ lookup('env','VARS_FILE') }}"
   tasks:
-  - name cancel vms
+  - name: cancel vms
     sl_vm:
       state: absent
       tags: "{{ sl_tag }}"
