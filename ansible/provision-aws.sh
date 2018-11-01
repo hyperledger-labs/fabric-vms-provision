@@ -9,32 +9,25 @@ rm -rf ~/.ssh/known_hosts
 
 
 PEER_COUNT=$@
-export VARS_FILE=./vars/softlayer.yml
+export VARS_FILE=./vars/aws.yml
 
 # autogenerate the role for creating the softlayer vms
-python3 utils/softlayer/softlayer.py  -p $PEER_COUNT  >  roles/create/tasks/main.yml
+python3 utils/aws/aws.py  -p $PEER_COUNT  >  roles/create/tasks/main.yml
 
 ansible-playbook create.yml
 
-set +x
-while [[ ! -z "$(slcli vs list --columns id,hostname,primary_ip,backend_ip,datacenter,action,power_state | grep '^[0-9]' | awk '{print $2 "," $6}' | grep -v NULL)" ]]
-do
-	echo $(date) " - waiting for vms to provision"
-	sleep 20
-done
-
-set -x
-sleep 180
+sleep 20
 
 # autogenerate the ansible hosts file
-python3 utils/softlayer/ans_hosts.py > hosts
+python3 utils/aws/ans_hosts.py > hosts
 
 # autogenerate a /etc/hosts file, to be included in each softlayer vm
-python3 utils/softlayer/etc_hosts.py > roles/common/files/hosts
+python3 utils/aws/etc_hosts.py > roles/common/files/hosts
 
 
 eval `ssh-agent`
 
+ansible-playbook  --key-file "~/.ssh/fabric"  root.yml
 ansible-playbook  --key-file "~/.ssh/fabric"  common.yml
 ansible-playbook  --key-file "~/.ssh/fabric"  --extra-vars "peer_count=\"$PEER_COUNT\""  build.yml
 
@@ -62,10 +55,20 @@ cat << 'EOF' > cancel.yml
   vars_files:
   - "{{ lookup('env','VARS_FILE') }}"
   tasks:
-  - name: cancel vms
-    sl_vm:
+  - name: Gather EC2 facts
+    ec2_instance_facts:
+      filters:
+        "tag:Class": fabric
+        instance-state-name: running
+    register: facts
+
+  - debug: var=facts
+
+  - ec2:
       state: absent
-      tags: "{{ sl_tag }}"
+      region: "{{ region }}"
+      instance_ids: "{{ item.instance_id }}"
+    with_items: "{{ facts.instances }}"
 EOF
 
 

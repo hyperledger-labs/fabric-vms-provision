@@ -1,0 +1,37 @@
+- name: check if python is installed
+  raw: test -e /usr/bin/python
+  register: python_installed
+  changed_when: false
+  failed_when: false
+
+- name: check if debian based OS
+  raw: which apt-get
+  register: is_ubuntu
+  changed_when: false
+  failed_when: false
+
+- name: install python
+  raw: (apt-get -y update && apt-get install -y python-minimal)
+  when: python_installed.rc != 0 and is_ubuntu.rc == 0
+
+- name: copy sshd_config
+  copy:
+    src: "../files/sshd_config"
+    dest: "/etc/ssh/sshd_config"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: copy public key to root
+  copy:
+    src: "{{ lookup('env','HOME') }}/.ssh/fabric.pub"
+    dest: "/root/.ssh/authorized_keys"
+    owner: root
+    group: root
+    mode: 0600
+
+- name: reload ssh service
+  remote_user: root
+  service:
+    name: ssh
+    state: reloaded
