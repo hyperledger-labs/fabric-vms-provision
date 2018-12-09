@@ -31,14 +31,14 @@ version: 1.0.0
 
 CONNECTION_PROFILE_CA = '''
 certificateAuthorities:
-  ca.org{org_id}.example.com:
-    url: http://fabric-ca{org_id}.example.com:7054
+  fabricca{org_id}.example.com:
+    url: http://fabricca{org_id}.example.com:7054
     httpOptions:
       verify: false
     registrar:
       enrollId: admin
       enrollSecret: adminpw
-    caName: ca.org{org_id}.example.com
+    caName: fabricca{org_id}.example.com
     tlsCACerts:
       path: /home/fabric/pkg-invoke/fabric-sdk-go/crypto-config/peerOrganizations/org{org_id}.example.com/ca/ca.org{org_id}.example.com-cert.pem
 
@@ -102,7 +102,7 @@ organizations:
     mspid: Org{org_id}MSP
     cryptoPath: /home/fabric/pkg-invoke/fabric-sdk-go/crypto-config/peerOrganizations/org{org_id}.example.com/users/User1@org{org_id}.example.com/msp
     certificateAuthorities:
-      - ca.org{org_id}.example.com
+      - fabricca{org_id}.example.com
     peers:'''
 
 CONNECTION_PROFILE_ORGANIZATIONS_PEERS = '''

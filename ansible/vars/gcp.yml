@@ -1,0 +1,15 @@
+golang_url: "https://dl.google.com/go/go1.10.3.linux-amd64.tar.gz"
+
+domain: example-com
+zone: "{{ lookup('env','GOOGLE_COMPUTE_ZONE') }}"
+machine_type: n1-standard-1
+image: ubuntu-1804
+service_account_email: "{{ lookup('env','GOOGLE_SA_EMAIL') }}"
+credentials_file: "{{ lookup('env','GOOGLE_APPLICATION_CREDENTIALS') }}"
+project_id: "{{ lookup('env','GOOGLE_PROJECT_ID') }}"
+
+fabric: {
+  user: "fabric",
+  uid: "1001",
+  pass: "{{ lookup('env','PASS') }}"
+}

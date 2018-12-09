@@ -63,11 +63,11 @@ def peer(peer_num, org_num):
 
 def orderer(org_num):
     '''generate info for each orderer vm'''
-    template_orderer = '''# ordererOrg{o}
+    template_orderer = '''# orderer{o}
     - hostname: "orderer{o}"
       domain: "{{{{ sl_domain }}}}"
       datacenter: "{{{{ sl_datacenter }}}}"
-      tags: "{{{{ sl_tag }}}},ordererOrg{o}"
+      tags: "{{{{ sl_tag }}}},orderer{o}"
       cpus: "{{{{ sl_cpus }}}}"
       memory: "{{{{ sl_ram }}}}"
       os_code: "{{{{ sl_os }}}}"
@@ -111,11 +111,11 @@ def kafka(org_num):
 
 def fabric_ca(org_num):
     '''generate info for each fabric-ca vm'''
-    template_fabricca = '''# fabricCAOrg{o}
-    - hostname: "fabric-ca{o}"
+    template_fabricca = '''# fabricca{o}
+    - hostname: "fabricca{o}"
       domain: "{{{{ sl_domain }}}}"
       datacenter: "{{{{ sl_datacenter }}}}"
-      tags: "{{{{ sl_tag }}}},fabricCAOrg{o}"
+      tags: "{{{{ sl_tag }}}},fabricca{o}"
       cpus: "{{{{ sl_cpus }}}}"
       memory: "{{{{ sl_ram }}}}"
       os_code: "{{{{ sl_os }}}}"

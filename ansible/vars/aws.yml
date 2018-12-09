@@ -12,5 +12,5 @@ aws_secret_key: "{{ lookup('env','AWS_SECRET_KEY') }}"
 fabric: {
   user: "fabric",
   uid: "1001",
-  pass: "{{ lookup('env','AWSPASS') }}"
+  pass: "{{ lookup('env','PASS') }}"
 }

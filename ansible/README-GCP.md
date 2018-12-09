@@ -4,9 +4,9 @@ Most Hyperledger Fabric examples focus on provisioning it with `docker-compose`,
 
 **Note:**
 - **This is not a production ready example.**
-- **It will also incur the financial costs of running aws vms.**
+- **It will also incur the financial costs of running gcp vms.**
 
-The example leverages `ansible` and `aws ec2` to provision a network.
+The example leverages `ansible` and `gcp` to provision a network.
 
 <p align="center">
   <img src="../orgs.svg">
@@ -16,9 +16,9 @@ The example leverages `ansible` and `aws ec2` to provision a network.
 ## Quickstart
 
 ### Prerequisites:
-- aws account
-- aws api key
-- an ssh key registered with aws
+- gcp account
+- gcp project
+- an ssh key registered with gcp
 - vagrant
 - virtualbox
 
@@ -29,20 +29,24 @@ vagrant up
 vagrant ssh
 ```
 
-On the vagrant vm, create `~/.aws`, and populate `~/.aws/config, ~/.aws/credentials`. See aws (iam) for more details
+On the vagrant vm, create `~/.gcloud`, and populate `~/.gcloud/<project-name>.json`. See gcp for more details
 ```
-# cat ~/.aws/config 
-[default]
-output = json
-region = 
-
-# cat ~/.aws/credentials
-[default]
-aws_access_key_id =
-aws_secret_access_key =
+# cat ~/.gcloud/<project-name>.json
+{
+  "type":  "value"
+  "project_id":  "value"
+  "private_key_id":  "value"
+  "private_key":  "value"
+  "client_email":  "value"
+  "client_id":  "value"
+  "auth_uri":  "value"
+  "token_uri":  "value"
+  "auth_provider_x509_cert_url":  "value"
+  "client_x509_cert_url":  "value"
+}
 ```
 
-On the vagrant vm, create an ssh public/private keypair (called `/home/vagrant/.ssh/fabric`) and copy the public key to aws. See `EC2 Dashboard -> Key Pairs` in aws web console.
+On the vagrant vm, create an ssh public/private keypair (called `/home/vagrant/.ssh/fabric`) and copy the public key to gcp.
 
 ### In general
 
@@ -53,8 +57,10 @@ vagrant ssh
 cd /vagrant/ansible
 
 
-export AWS_ACCESS_KEY='REPLACE ME'
-export AWS_SECRET_KEY='REPLACE ME'
+export GOOGLE_APPLICATION_CREDENTIALS=/home/vagrant/.gcloud/<project-name>.json
+export GOOGLE_PROJECT_ID='<project-name>'
+export GOOGLE_COMPUTE_ZONE='<location>'
+export GOOGLE_SA_EMAIL='<value>@developer.gserviceaccount.com'
 
 
 # create password for vms
@@ -64,26 +70,28 @@ export PASS='REPLACE ME'
 
 eval `ssh-agent`
 
-./provision-aws.sh <number of peers in org0> <number of peers in org1> ... <number of peers in org N>
+./provision-gcp.sh <number of peers in org0> <number of peers in org1> ... <number of peers in org N>
 # for example to create to create 3 orgs, org0 with 2 peers, org1 with 1 peer, and org2 with 3 peers
-# ./provision-aws.sh 2 1 3
+# ./provision-gcp.sh 2 1 3
 
 # once complete, there is a utility to list ssh connection details for each vm
-python3 utils/aws/env_hosts.py
+python3 utils/gcp/env_hosts.py
 ```
 
 ### Notes
 It might be worthwhile adding 
 ```
-export AWS_ACCESS_KEY='REPLACE ME'
-export AWS_SECRET_KEY='REPLACE ME'
+export GOOGLE_APPLICATION_CREDENTIALS='REPLACE ME'
+export GOOGLE_PROJECT_ID='REPLACE ME'
+export GOOGLE_COMPUTE_ZONE='REPLACE ME'
+export GOOGLE_SA_EMAIL='REPLACE ME'
 eval `ssh-agent` 
 ```
 to the vagrant vm `/home/vagrant/.bashrc`
 
 **This creates a lot of vms**
 
-For example, with `./provision-aws.sh 2 1 3`, each org has a seperate vm for zookeeper, kafka, fabric-ca, orderer, cli, and a seperate vm for each peer. In the example `./provision-aws.sh 2 1 3` this equates to **21 vms** _[1(zk) + 1(kafka) + 1(fca) + 1(orderer) + 1(cli) + 2(peer)] + [1(zk) + 1(kafka) + 1(fca) + 1(orderer) + 1(cli) + 1(peer)] + [1(zk) + 1(kafka) + 1(fca) + 1(orderer) + 1(cli) + 3(peer)]_
+For example, with `./provision-gcp.sh 2 1 3`, each org has a seperate vm for zookeeper, kafka, fabric-ca, orderer, cli, and a seperate vm for each peer. In the example `./provision-gcp.sh 2 1 3` this equates to **21 vms** _[1(zk) + 1(kafka) + 1(fca) + 1(orderer) + 1(cli) + 2(peer)] + [1(zk) + 1(kafka) + 1(fca) + 1(orderer) + 1(cli) + 1(peer)] + [1(zk) + 1(kafka) + 1(fca) + 1(orderer) + 1(cli) + 3(peer)]_
 
 |           |  org0 |  org1 |  org2 |  total |
 | :-------- | ----: | ----: | ----: | -----: |
@@ -103,7 +111,7 @@ Open a new terminal and connect to `cli0`
 
 ```
 vagrant ssh
-# note: $CLI0 comes from cd /vagrant/ansible ; python3 utils/aws/env_hosts.py 
+# note: $CLI0 comes from cd /vagrant/ansible ; python3 utils/gcp/env_hosts.py 
 ssh -i ~/.ssh/fabric fabric@$CLI0
 cd pkg-cli0
 
@@ -198,10 +206,4 @@ cd ~/pkg-invoke/fabric-sdk-go
 
 
 ## Tear down
-
-Open a terminal
-```
-vargrant ssh
-cd /vagrant/ansible
-VARS_FILE=./vars/aws.yml ansible-playbook --key-file "~/.ssh/fabric"  cancel.yml
-```
+Go to the web console

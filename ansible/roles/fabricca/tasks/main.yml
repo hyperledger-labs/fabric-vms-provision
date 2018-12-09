@@ -1,12 +1,3 @@
-- name: "ufw allow fabric"
-  remote_user: root
-  ufw:
-    interface: eth0
-    direction: in
-    rule: allow
-    proto: tcp
-    port: 7050:7054
-
 - name: copy fabric-ca artifacts
   synchronize:
     src: "/home/{{ fabric.user }}/build/fabric/org{{ org_id }}/pkg-fabric-ca{{ org_id }}"

@@ -8,4 +8,4 @@
   vars_files:
   - "./vars/aws.yml"
   roles:
-  - root
+  - standardize-aws

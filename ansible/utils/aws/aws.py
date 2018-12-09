@@ -97,7 +97,7 @@ def peer(peer_num, org_num):
 
 
 def orderer(org_num):
-    vmtype = 'ordererOrg{}'.format(org_num)
+    vmtype = 'orderer{}'.format(org_num)
     host = 'orderer{}'.format(org_num)
     print(TEMPLATE.format(vmtype=vmtype, host=host))
 
@@ -115,8 +115,8 @@ def kafka(org_num):
 
 
 def fabric_ca(org_num):
-    vmtype = 'fabricCAOrg{}'.format(org_num)
-    host = 'fabric-ca{}'.format(org_num)
+    vmtype = 'fabricca{}'.format(org_num)
+    host = 'fabricca{}'.format(org_num)
     print(TEMPLATE.format(vmtype=vmtype, host=host))
 
 
@@ -133,10 +133,10 @@ def wait(args):
     for oid in range(0, org_count):
         for pid in range(0, args.peer_count[oid]):
             print("   - '{{{{ peer{}org{}.instances[0].public_ip }}}}'".format(pid, oid))
-        print("   - '{{{{ ordererOrg{}.instances[0].public_ip }}}}'".format(oid))
+        print("   - '{{{{ orderer{}.instances[0].public_ip }}}}'".format(oid))
         print("   - '{{{{ z{}.instances[0].public_ip }}}}'".format(oid))
         print("   - '{{{{ k{}.instances[0].public_ip }}}}'".format(oid))
-        print("   - '{{{{ fabricCAOrg{}.instances[0].public_ip }}}}'".format(oid))
+        print("   - '{{{{ fabricca{}.instances[0].public_ip }}}}'".format(oid))
         print("   - '{{{{ cli{}.instances[0].public_ip }}}}'".format(oid))
 
 

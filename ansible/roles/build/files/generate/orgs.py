@@ -53,10 +53,10 @@ cat << 'EOF' > run
 
 set -x
 
-export FABRIC_CA_SERVER_CA_NAME=ca.org{org_id}.example.com
+export FABRIC_CA_SERVER_CA_NAME=fabricca{org_id}.example.com
 SK=$(ls config/ |grep _sk |head -n 1)
 
-./fabric-ca-server  start  -b admin:adminpw  --ca.name ca.org{org_id}.example.com  --ca.certfile ./config/ca.org{org_id}.example.com-cert.pem  --ca.keyfile ./config/$SK
+./fabric-ca-server  start  -b admin:adminpw  --ca.name fabricca{org_id}.example.com  --ca.certfile ./config/ca.org{org_id}.example.com-cert.pem  --ca.keyfile ./config/$SK
 
 EOF
 

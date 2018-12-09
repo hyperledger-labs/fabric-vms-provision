@@ -12,15 +12,6 @@
     state: absent
     regexp: '^127.0.1.1'
 
-- name: "ufw allow kafka"
-  remote_user: root
-  ufw:
-    interface: eth0
-    direction: in
-    rule: allow
-    proto: tcp
-    port: 9092:9093
-
 - name: "download kafka"
   remote_user: "{{ fabric.user }}"
   get_url:

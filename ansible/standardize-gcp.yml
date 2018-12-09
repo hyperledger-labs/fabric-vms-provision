@@ -1,0 +1,11 @@
+---
+- hosts: all
+  remote_user:  fabric
+  become:       true
+  become_user:  root
+  become_method: sudo
+  gather_facts: no
+  vars_files:
+  - "./vars/gcp.yml"
+  roles:
+  - standardize-gcp

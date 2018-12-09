@@ -1,7 +1,11 @@
 $provision_root = <<'SCRIPT_ROOT'
+
+echo "deb http://packages.cloud.google.com/apt cloud-sdk-bionic main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+
 apt-get update
 apt-get upgrade -y
-apt-get install -y build-essential docker.io git jq libltdl-dev python3-pip whois
+apt-get install -y build-essential docker.io git google-cloud-sdk jq libltdl-dev python3-pip whois
 apt-get autoremove -y
 usermod -aG docker vagrant
 SCRIPT_ROOT
@@ -21,9 +25,11 @@ git clone https://github.com/fatih/vim-go.git ~/.vim/bundle/vim-go
 
 
 pip3 install --user ansible
+pip3 install --user apache-libcloud
 pip3 install --user boto
 pip3 install --user boto3
 pip3 install --user docker-compose
+pip3 install --user google-api-python-client
 pip3 install --user softlayer
 
 

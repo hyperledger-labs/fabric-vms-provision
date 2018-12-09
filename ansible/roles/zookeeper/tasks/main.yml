@@ -12,15 +12,6 @@
     state: absent
     regexp: '^127.0.1.1'
 
-- name: "ufw allow zookeeper"
-  remote_user: root
-  ufw:
-    interface: eth0
-    direction: in
-    rule: allow
-    proto: tcp
-    port: 2181:2183
-
 - name: "download zookeeper"
   remote_user: "{{ fabric.user }}"
   get_url:
