@@ -20,7 +20,7 @@ def main():
             continue
 
         for tags in instance.tags:
-            if tags['Key'] == 'Host':
+            if tags['Key'] == 'Type':
                 instance_host = tags['Value']
 
         ip = instance.public_ip_address

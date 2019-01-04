@@ -1,1 +1,622 @@
-# python3 utils/softlayer/softlayer.yml  -p <args>  >  roles/create/tasks/main.yml
+
+- name: create group
+  ec2_group:
+    name: '{{ group }}'
+    description: fabric security group
+    region: '{{ region }}'
+    aws_access_key: '{{ aws_access_key }}'
+    aws_secret_key: '{{ aws_secret_key }}'
+    rules:
+  register: creategroup
+
+- name: update group
+  ec2_group:
+    name: '{{ group }}'
+    description: fabric security group
+    region: '{{ region }}'
+    aws_access_key: '{{ aws_access_key }}'
+    aws_secret_key: '{{ aws_secret_key }}'
+    rules:
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        ports:
+          - 22
+          - 2181
+          - 2182
+          - 2183
+          - 7050
+          - 7051
+          - 7053
+          - 7054
+          - 9092
+          - 9093
+        group_id: '{{ creategroup.group_id }}'
+  register: secgroup
+- name: print secgroup
+  debug: var=secgroup
+
+
+- name: launch build instance
+  ec2:
+    key_name: '{{ keypair }}'
+    group: '{{ group }}'
+    instance_type: '{{ instance_type }}'
+    image: '{{ image }}'
+    wait: true
+    region: '{{ region }}'
+    aws_access_key: '{{ aws_access_key }}'
+    aws_secret_key: '{{ aws_secret_key }}'
+  register: 'build'
+- name: tag build image
+  ec2_tag:
+    region: '{{ region }}'
+    resource: '{{ build.instance_ids[0] }}'
+    state: present
+    tags:
+      Class: fabric
+      Type: build
+      Host: build
+      FQDN: 'build.{{ domain }}'
+- name: print build
+  debug: var=build
+
+
+- name: launch peer0org0 instance
+  ec2:
+    key_name: '{{ keypair }}'
+    group: '{{ group }}'
+    instance_type: '{{ instance_type }}'
+    image: '{{ image }}'
+    wait: true
+    region: '{{ region }}'
+    aws_access_key: '{{ aws_access_key }}'
+    aws_secret_key: '{{ aws_secret_key }}'
+  register: 'peer0org0'
+- name: tag peer0org0 image
+  ec2_tag:
+    region: '{{ region }}'
+    resource: '{{ peer0org0.instance_ids[0] }}'
+    state: present
+    tags:
+      Class: fabric
+      Type: peer0org0
+      Host: peer0.org0
+      FQDN: 'peer0.org0.{{ domain }}'
+- name: print peer0org0
+  debug: var=peer0org0
+
+
+- name: launch peer1org0 instance
+  ec2:
+    key_name: '{{ keypair }}'
+    group: '{{ group }}'
+    instance_type: '{{ instance_type }}'
+    image: '{{ image }}'
+    wait: true
+    region: '{{ region }}'
+    aws_access_key: '{{ aws_access_key }}'
+    aws_secret_key: '{{ aws_secret_key }}'
+  register: 'peer1org0'
+- name: tag peer1org0 image
+  ec2_tag:
+    region: '{{ region }}'
+    resource: '{{ peer1org0.instance_ids[0] }}'
+    state: present
+    tags:
+      Class: fabric
+      Type: peer1org0
+      Host: peer1.org0
+      FQDN: 'peer1.org0.{{ domain }}'
+- name: print peer1org0
+  debug: var=peer1org0
+
+
+- name: launch orderer0 instance
+  ec2:
+    key_name: '{{ keypair }}'
+    group: '{{ group }}'
+    instance_type: '{{ instance_type }}'
+    image: '{{ image }}'
+    wait: true
+    region: '{{ region }}'
+    aws_access_key: '{{ aws_access_key }}'
+    aws_secret_key: '{{ aws_secret_key }}'
+  register: 'orderer0'
+- name: tag orderer0 image
+  ec2_tag:
+    region: '{{ region }}'
+    resource: '{{ orderer0.instance_ids[0] }}'
+    state: present
+    tags:
+      Class: fabric
+      Type: orderer0
+      Host: orderer0
+      FQDN: 'orderer0.{{ domain }}'
+- name: print orderer0
+  debug: var=orderer0
+
+
+- name: launch z0 instance
+  ec2:
+    key_name: '{{ keypair }}'
+    group: '{{ group }}'
+    instance_type: '{{ instance_type }}'
+    image: '{{ image }}'
+    wait: true
+    region: '{{ region }}'
+    aws_access_key: '{{ aws_access_key }}'
+    aws_secret_key: '{{ aws_secret_key }}'
+  register: 'z0'
+- name: tag z0 image
+  ec2_tag:
+    region: '{{ region }}'
+    resource: '{{ z0.instance_ids[0] }}'
+    state: present
+    tags:
+      Class: fabric
+      Type: z0
+      Host: z0
+      FQDN: 'z0.{{ domain }}'
+- name: print z0
+  debug: var=z0
+
+
+- name: launch k0 instance
+  ec2:
+    key_name: '{{ keypair }}'
+    group: '{{ group }}'
+    instance_type: '{{ instance_type }}'
+    image: '{{ image }}'
+    wait: true
+    region: '{{ region }}'
+    aws_access_key: '{{ aws_access_key }}'
+    aws_secret_key: '{{ aws_secret_key }}'
+  register: 'k0'
+- name: tag k0 image
+  ec2_tag:
+    region: '{{ region }}'
+    resource: '{{ k0.instance_ids[0] }}'
+    state: present
+    tags:
+      Class: fabric
+      Type: k0
+      Host: k0
+      FQDN: 'k0.{{ domain }}'
+- name: print k0
+  debug: var=k0
+
+
+- name: launch fabricca0 instance
+  ec2:
+    key_name: '{{ keypair }}'
+    group: '{{ group }}'
+    instance_type: '{{ instance_type }}'
+    image: '{{ image }}'
+    wait: true
+    region: '{{ region }}'
+    aws_access_key: '{{ aws_access_key }}'
+    aws_secret_key: '{{ aws_secret_key }}'
+  register: 'fabricca0'
+- name: tag fabricca0 image
+  ec2_tag:
+    region: '{{ region }}'
+    resource: '{{ fabricca0.instance_ids[0] }}'
+    state: present
+    tags:
+      Class: fabric
+      Type: fabricca0
+      Host: fabricca0
+      FQDN: 'fabricca0.{{ domain }}'
+- name: print fabricca0
+  debug: var=fabricca0
+
+
+- name: launch cli0 instance
+  ec2:
+    key_name: '{{ keypair }}'
+    group: '{{ group }}'
+    instance_type: '{{ instance_type }}'
+    image: '{{ image }}'
+    wait: true
+    region: '{{ region }}'
+    aws_access_key: '{{ aws_access_key }}'
+    aws_secret_key: '{{ aws_secret_key }}'
+  register: 'cli0'
+- name: tag cli0 image
+  ec2_tag:
+    region: '{{ region }}'
+    resource: '{{ cli0.instance_ids[0] }}'
+    state: present
+    tags:
+      Class: fabric
+      Type: cli0
+      Host: cli0
+      FQDN: 'cli0.{{ domain }}'
+- name: print cli0
+  debug: var=cli0
+
+
+- name: launch peer0org1 instance
+  ec2:
+    key_name: '{{ keypair }}'
+    group: '{{ group }}'
+    instance_type: '{{ instance_type }}'
+    image: '{{ image }}'
+    wait: true
+    region: '{{ region }}'
+    aws_access_key: '{{ aws_access_key }}'
+    aws_secret_key: '{{ aws_secret_key }}'
+  register: 'peer0org1'
+- name: tag peer0org1 image
+  ec2_tag:
+    region: '{{ region }}'
+    resource: '{{ peer0org1.instance_ids[0] }}'
+    state: present
+    tags:
+      Class: fabric
+      Type: peer0org1
+      Host: peer0.org1
+      FQDN: 'peer0.org1.{{ domain }}'
+- name: print peer0org1
+  debug: var=peer0org1
+
+
+- name: launch peer1org1 instance
+  ec2:
+    key_name: '{{ keypair }}'
+    group: '{{ group }}'
+    instance_type: '{{ instance_type }}'
+    image: '{{ image }}'
+    wait: true
+    region: '{{ region }}'
+    aws_access_key: '{{ aws_access_key }}'
+    aws_secret_key: '{{ aws_secret_key }}'
+  register: 'peer1org1'
+- name: tag peer1org1 image
+  ec2_tag:
+    region: '{{ region }}'
+    resource: '{{ peer1org1.instance_ids[0] }}'
+    state: present
+    tags:
+      Class: fabric
+      Type: peer1org1
+      Host: peer1.org1
+      FQDN: 'peer1.org1.{{ domain }}'
+- name: print peer1org1
+  debug: var=peer1org1
+
+
+- name: launch orderer1 instance
+  ec2:
+    key_name: '{{ keypair }}'
+    group: '{{ group }}'
+    instance_type: '{{ instance_type }}'
+    image: '{{ image }}'
+    wait: true
+    region: '{{ region }}'
+    aws_access_key: '{{ aws_access_key }}'
+    aws_secret_key: '{{ aws_secret_key }}'
+  register: 'orderer1'
+- name: tag orderer1 image
+  ec2_tag:
+    region: '{{ region }}'
+    resource: '{{ orderer1.instance_ids[0] }}'
+    state: present
+    tags:
+      Class: fabric
+      Type: orderer1
+      Host: orderer1
+      FQDN: 'orderer1.{{ domain }}'
+- name: print orderer1
+  debug: var=orderer1
+
+
+- name: launch z1 instance
+  ec2:
+    key_name: '{{ keypair }}'
+    group: '{{ group }}'
+    instance_type: '{{ instance_type }}'
+    image: '{{ image }}'
+    wait: true
+    region: '{{ region }}'
+    aws_access_key: '{{ aws_access_key }}'
+    aws_secret_key: '{{ aws_secret_key }}'
+  register: 'z1'
+- name: tag z1 image
+  ec2_tag:
+    region: '{{ region }}'
+    resource: '{{ z1.instance_ids[0] }}'
+    state: present
+    tags:
+      Class: fabric
+      Type: z1
+      Host: z1
+      FQDN: 'z1.{{ domain }}'
+- name: print z1
+  debug: var=z1
+
+
+- name: launch k1 instance
+  ec2:
+    key_name: '{{ keypair }}'
+    group: '{{ group }}'
+    instance_type: '{{ instance_type }}'
+    image: '{{ image }}'
+    wait: true
+    region: '{{ region }}'
+    aws_access_key: '{{ aws_access_key }}'
+    aws_secret_key: '{{ aws_secret_key }}'
+  register: 'k1'
+- name: tag k1 image
+  ec2_tag:
+    region: '{{ region }}'
+    resource: '{{ k1.instance_ids[0] }}'
+    state: present
+    tags:
+      Class: fabric
+      Type: k1
+      Host: k1
+      FQDN: 'k1.{{ domain }}'
+- name: print k1
+  debug: var=k1
+
+
+- name: launch fabricca1 instance
+  ec2:
+    key_name: '{{ keypair }}'
+    group: '{{ group }}'
+    instance_type: '{{ instance_type }}'
+    image: '{{ image }}'
+    wait: true
+    region: '{{ region }}'
+    aws_access_key: '{{ aws_access_key }}'
+    aws_secret_key: '{{ aws_secret_key }}'
+  register: 'fabricca1'
+- name: tag fabricca1 image
+  ec2_tag:
+    region: '{{ region }}'
+    resource: '{{ fabricca1.instance_ids[0] }}'
+    state: present
+    tags:
+      Class: fabric
+      Type: fabricca1
+      Host: fabricca1
+      FQDN: 'fabricca1.{{ domain }}'
+- name: print fabricca1
+  debug: var=fabricca1
+
+
+- name: launch cli1 instance
+  ec2:
+    key_name: '{{ keypair }}'
+    group: '{{ group }}'
+    instance_type: '{{ instance_type }}'
+    image: '{{ image }}'
+    wait: true
+    region: '{{ region }}'
+    aws_access_key: '{{ aws_access_key }}'
+    aws_secret_key: '{{ aws_secret_key }}'
+  register: 'cli1'
+- name: tag cli1 image
+  ec2_tag:
+    region: '{{ region }}'
+    resource: '{{ cli1.instance_ids[0] }}'
+    state: present
+    tags:
+      Class: fabric
+      Type: cli1
+      Host: cli1
+      FQDN: 'cli1.{{ domain }}'
+- name: print cli1
+  debug: var=cli1
+
+
+- name: launch peer0org2 instance
+  ec2:
+    key_name: '{{ keypair }}'
+    group: '{{ group }}'
+    instance_type: '{{ instance_type }}'
+    image: '{{ image }}'
+    wait: true
+    region: '{{ region }}'
+    aws_access_key: '{{ aws_access_key }}'
+    aws_secret_key: '{{ aws_secret_key }}'
+  register: 'peer0org2'
+- name: tag peer0org2 image
+  ec2_tag:
+    region: '{{ region }}'
+    resource: '{{ peer0org2.instance_ids[0] }}'
+    state: present
+    tags:
+      Class: fabric
+      Type: peer0org2
+      Host: peer0.org2
+      FQDN: 'peer0.org2.{{ domain }}'
+- name: print peer0org2
+  debug: var=peer0org2
+
+
+- name: launch peer1org2 instance
+  ec2:
+    key_name: '{{ keypair }}'
+    group: '{{ group }}'
+    instance_type: '{{ instance_type }}'
+    image: '{{ image }}'
+    wait: true
+    region: '{{ region }}'
+    aws_access_key: '{{ aws_access_key }}'
+    aws_secret_key: '{{ aws_secret_key }}'
+  register: 'peer1org2'
+- name: tag peer1org2 image
+  ec2_tag:
+    region: '{{ region }}'
+    resource: '{{ peer1org2.instance_ids[0] }}'
+    state: present
+    tags:
+      Class: fabric
+      Type: peer1org2
+      Host: peer1.org2
+      FQDN: 'peer1.org2.{{ domain }}'
+- name: print peer1org2
+  debug: var=peer1org2
+
+
+- name: launch orderer2 instance
+  ec2:
+    key_name: '{{ keypair }}'
+    group: '{{ group }}'
+    instance_type: '{{ instance_type }}'
+    image: '{{ image }}'
+    wait: true
+    region: '{{ region }}'
+    aws_access_key: '{{ aws_access_key }}'
+    aws_secret_key: '{{ aws_secret_key }}'
+  register: 'orderer2'
+- name: tag orderer2 image
+  ec2_tag:
+    region: '{{ region }}'
+    resource: '{{ orderer2.instance_ids[0] }}'
+    state: present
+    tags:
+      Class: fabric
+      Type: orderer2
+      Host: orderer2
+      FQDN: 'orderer2.{{ domain }}'
+- name: print orderer2
+  debug: var=orderer2
+
+
+- name: launch z2 instance
+  ec2:
+    key_name: '{{ keypair }}'
+    group: '{{ group }}'
+    instance_type: '{{ instance_type }}'
+    image: '{{ image }}'
+    wait: true
+    region: '{{ region }}'
+    aws_access_key: '{{ aws_access_key }}'
+    aws_secret_key: '{{ aws_secret_key }}'
+  register: 'z2'
+- name: tag z2 image
+  ec2_tag:
+    region: '{{ region }}'
+    resource: '{{ z2.instance_ids[0] }}'
+    state: present
+    tags:
+      Class: fabric
+      Type: z2
+      Host: z2
+      FQDN: 'z2.{{ domain }}'
+- name: print z2
+  debug: var=z2
+
+
+- name: launch k2 instance
+  ec2:
+    key_name: '{{ keypair }}'
+    group: '{{ group }}'
+    instance_type: '{{ instance_type }}'
+    image: '{{ image }}'
+    wait: true
+    region: '{{ region }}'
+    aws_access_key: '{{ aws_access_key }}'
+    aws_secret_key: '{{ aws_secret_key }}'
+  register: 'k2'
+- name: tag k2 image
+  ec2_tag:
+    region: '{{ region }}'
+    resource: '{{ k2.instance_ids[0] }}'
+    state: present
+    tags:
+      Class: fabric
+      Type: k2
+      Host: k2
+      FQDN: 'k2.{{ domain }}'
+- name: print k2
+  debug: var=k2
+
+
+- name: launch fabricca2 instance
+  ec2:
+    key_name: '{{ keypair }}'
+    group: '{{ group }}'
+    instance_type: '{{ instance_type }}'
+    image: '{{ image }}'
+    wait: true
+    region: '{{ region }}'
+    aws_access_key: '{{ aws_access_key }}'
+    aws_secret_key: '{{ aws_secret_key }}'
+  register: 'fabricca2'
+- name: tag fabricca2 image
+  ec2_tag:
+    region: '{{ region }}'
+    resource: '{{ fabricca2.instance_ids[0] }}'
+    state: present
+    tags:
+      Class: fabric
+      Type: fabricca2
+      Host: fabricca2
+      FQDN: 'fabricca2.{{ domain }}'
+- name: print fabricca2
+  debug: var=fabricca2
+
+
+- name: launch cli2 instance
+  ec2:
+    key_name: '{{ keypair }}'
+    group: '{{ group }}'
+    instance_type: '{{ instance_type }}'
+    image: '{{ image }}'
+    wait: true
+    region: '{{ region }}'
+    aws_access_key: '{{ aws_access_key }}'
+    aws_secret_key: '{{ aws_secret_key }}'
+  register: 'cli2'
+- name: tag cli2 image
+  ec2_tag:
+    region: '{{ region }}'
+    resource: '{{ cli2.instance_ids[0] }}'
+    state: present
+    tags:
+      Class: fabric
+      Type: cli2
+      Host: cli2
+      FQDN: 'cli2.{{ domain }}'
+- name: print cli2
+  debug: var=cli2
+
+
+- name: wait for ssh
+  wait_for:
+    host: '{{ item }}'
+    port: 22
+    delay: 5
+    sleep: 5
+    timeout: 320
+    state: started
+  with_items:
+   - '{{ build.instances[0].public_ip }}'
+   - '{{ peer0org0.instances[0].public_ip }}'
+   - '{{ peer1org0.instances[0].public_ip }}'
+   - '{{ orderer0.instances[0].public_ip }}'
+   - '{{ z0.instances[0].public_ip }}'
+   - '{{ k0.instances[0].public_ip }}'
+   - '{{ fabricca0.instances[0].public_ip }}'
+   - '{{ cli0.instances[0].public_ip }}'
+   - '{{ peer0org1.instances[0].public_ip }}'
+   - '{{ peer1org1.instances[0].public_ip }}'
+   - '{{ orderer1.instances[0].public_ip }}'
+   - '{{ z1.instances[0].public_ip }}'
+   - '{{ k1.instances[0].public_ip }}'
+   - '{{ fabricca1.instances[0].public_ip }}'
+   - '{{ cli1.instances[0].public_ip }}'
+   - '{{ peer0org2.instances[0].public_ip }}'
+   - '{{ peer1org2.instances[0].public_ip }}'
+   - '{{ orderer2.instances[0].public_ip }}'
+   - '{{ z2.instances[0].public_ip }}'
+   - '{{ k2.instances[0].public_ip }}'
+   - '{{ fabricca2.instances[0].public_ip }}'
+   - '{{ cli2.instances[0].public_ip }}'

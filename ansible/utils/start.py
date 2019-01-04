@@ -88,12 +88,12 @@ def script_yml(peer_count, vars_file):
     for org in range(0, org_count):
         script_template('z{}'.format(org), 'zookeeper.service', vars_file, 'autogen_start_zookeeper{}.yml'.format(org))
         script_template('k{}'.format(org), 'kafka.service', vars_file, 'autogen_start_kafka{}.yml'.format(org))
-        script_template('fabric-ca{}'.format(org), 'fabricca.service', vars_file, 'autogen_start_fabricca{}.yml'.format(org))
+        script_template('fabricca{}'.format(org), 'fabricca.service', vars_file, 'autogen_start_fabricca{}.yml'.format(org))
         script_template('orderer{}'.format(org), 'orderer.service', vars_file, 'autogen_start_orderer{}.yml'.format(org))
 
         script_template('orderer{}'.format(org), 'orderer.service', vars_file, 'autogen_start_orderer{}.yml'.format(org))
         for peer in range(0, peer_count[org]):
-            script_template('peer{}.org{}'.format(peer, org), 'peer.service', vars_file, 'autogen_start_peer{}org{}.yml'.format(peer, org))
+            script_template('peer{}org{}'.format(peer, org), 'peer.service', vars_file, 'autogen_start_peer{}org{}.yml'.format(peer, org))
 
 
 def main():

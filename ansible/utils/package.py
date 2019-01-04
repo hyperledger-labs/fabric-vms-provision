@@ -126,7 +126,7 @@ def script_yml_kafka(org_id, org_count, vars_file):
 def script_yml_fabricca(org_id, vars_file):
 
     template_fabricca = '''---
-- hosts: fabric-ca{org_id}
+- hosts: fabricca{org_id}
   remote_user: "{{{{ fabric.user }}}}"
   gather_facts: yes
   vars_files:
@@ -145,7 +145,7 @@ def script_yml_fabricca(org_id, vars_file):
 def script_yml_peer(peer_id, org_id, vars_file):
 
     template_peer = '''---
-- hosts: peer{peer_id}.org{org_id}
+- hosts: peer{peer_id}org{org_id}
   remote_user: "{{{{ fabric.user }}}}"
   gather_facts: yes
   vars_files:

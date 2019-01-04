@@ -16,7 +16,8 @@ def main():
     print('')
 
     for inst in insts:
-        print('[' + inst['hostname'] + ']')
+        host = inst['hostname'].replace('.', '')
+        print('[' host + ']')
         print(inst['primaryIpAddress'])
         print('')
 

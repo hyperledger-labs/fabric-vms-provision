@@ -18,26 +18,19 @@
   raw: (apt-get -y update && apt-get install -y python-minimal)
   when: python_installed.rc != 0 and is_ubuntu.rc == 0
 
-- name: update and upgrade apt packages
+- name: "add user fabric"
   remote_user: root
-  apt:
-    update_cache: yes
- 
-- name: install build-essential, libltdl-dev
-  remote_user: root
-  apt:
-    name: "{{ item }}"
+  user:
+    user: "{{ fabric.user }}"  
+    uid: "{{ fabric.uid }}"
+    password: "{{ fabric.pass }}"
+    groups: sudo
     state: present
-  with_items:
-    - 'build-essential'
-    - 'libltdl-dev'
-    - 'tree'
-    - 'htop'
+    shell: /bin/bash
 
-- name: "update /etc/hosts"
+- name: "add ssh key for fabric"
   remote_user: root
-  blockinfile:
-    insertbefore: BOF
-    path: "/etc/hosts"
-    block: |
-      {{ lookup('file', '../files/hosts') }}
+  authorized_key:
+    user: "{{ fabric.user }}"
+    state: present
+    key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/fabric.pub') }}"
