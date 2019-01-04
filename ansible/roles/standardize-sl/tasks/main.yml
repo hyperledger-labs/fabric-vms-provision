@@ -1,0 +1,16 @@
+- name: "add user fabric"
+  remote_user: root
+  user:
+    user: "{{ fabric.user }}"  
+    uid: "{{ fabric.uid }}"
+    password: "{{ fabric.pass }}"
+    groups: sudo
+    state: present
+    shell: /bin/bash
+
+- name: "add ssh key for fabric"
+  remote_user: root
+  authorized_key:
+    user: "{{ fabric.user }}"
+    state: present
+    key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/fabric.pub') }}"
