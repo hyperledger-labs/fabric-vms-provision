@@ -1,0 +1,7 @@
+---
+- hosts: all
+  gather_facts: no
+  vars_files:
+  - "./vars/softlayer.yml"
+  roles:
+  - standardize-sl

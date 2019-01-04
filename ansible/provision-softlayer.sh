@@ -35,6 +35,7 @@ python3 utils/softlayer/etc_hosts.py > roles/common/files/hosts
 
 eval `ssh-agent`
 
+ansible-playbook  --key-file "~/.ssh/fabric"  standardize-sl.yml
 ansible-playbook  --key-file "~/.ssh/fabric"  common.yml
 ansible-playbook  --key-file "~/.ssh/fabric"  --extra-vars "peer_count=\"$PEER_COUNT\""  build.yml
 
