@@ -1,4 +1,4 @@
-golang_url: "https://dl.google.com/go/go1.10.3.linux-amd64.tar.gz"
+golang_url: "https://dl.google.com/go/go1.10.7.linux-amd64.tar.gz"
 
 keypair: fabric
 group: fabric
